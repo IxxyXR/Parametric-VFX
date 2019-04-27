@@ -43,10 +43,10 @@ namespace UnityEditor.VFX.Block
         public bool UseDeltaTime = false;
         public bool UseRandom = false;
 
-        public string PropertyName = "";
-        public string XFn = "";
-        public string YFn = "";
-        public string ZFn = "";
+        public string PropertyName = "position";
+        public string XFn = "u";
+        public string YFn = "0";
+        public string ZFn = "v";
 
 
         public override string name { get { return BlockName + " (Custom)"; } }
