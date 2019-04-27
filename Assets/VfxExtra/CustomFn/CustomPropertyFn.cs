@@ -59,6 +59,8 @@ namespace UnityEditor.VFX.Block
         {
             get
             {
+//                yield return new VFXAttributeInfo(VFXAttribute.Find("particleID"), VFXAttributeMode.Read);
+                
                 foreach (var info in Attributes)
                     yield return new VFXAttributeInfo(VFXAttribute.Find(info.name), info.mode);
 

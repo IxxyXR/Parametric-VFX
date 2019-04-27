@@ -60,6 +60,18 @@ namespace UnityEditor.VFX.Block
             VMaximum = serializedObject.FindProperty("VMaximum");
             ScaleFactor = serializedObject.FindProperty("ScaleFactor");
 
+            if (Attributes.arraySize == 0)
+            {
+                AddAttribute("position", 2);
+                AddAttribute("particleId", 1);                
+            }
+
+            if (Properties.arraySize == 0)
+            {
+                AddProperty("voffset", "float");
+                AddProperty("uoffset", "float");
+            }
+
             dirty = false;
             serializedObject.Update();
 
@@ -86,10 +98,14 @@ namespace UnityEditor.VFX.Block
 
         void OnAddAttribute(ReorderableList list)
         {
+            AddAttribute("position", 3); // ReadWrite
+        }
+        void AddAttribute(string name, int type)
+        {
             Attributes.InsertArrayElementAtIndex(0);
             var sp = Attributes.GetArrayElementAtIndex(0);
-            sp.FindPropertyRelative("name").stringValue = "position";
-            sp.FindPropertyRelative("mode").enumValueIndex = 3; // ReadWrite
+            sp.FindPropertyRelative("name").stringValue = name;
+            sp.FindPropertyRelative("mode").enumValueIndex = type; 
             dirty = true;
             Apply();
         }
@@ -131,10 +147,15 @@ namespace UnityEditor.VFX.Block
 
         void OnAddProperty(ReorderableList list)
         {
+            AddProperty("newProperty", "float");
+        }
+        
+        void AddProperty(string name, string type)
+        {
             Properties.InsertArrayElementAtIndex(0);
             var sp = Properties.GetArrayElementAtIndex(0);
-            sp.FindPropertyRelative("name").stringValue = "newProperty";
-            sp.FindPropertyRelative("type").stringValue = "float";
+            sp.FindPropertyRelative("name").stringValue = name;
+            sp.FindPropertyRelative("type").stringValue = type;
             dirty = true;
             Apply();
         }
