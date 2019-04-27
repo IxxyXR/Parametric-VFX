@@ -1815,7 +1815,7 @@ VisualEffectResource:
         - m_ExpressionIndex: 110
           m_Value: 0
         - m_ExpressionIndex: 111
-          m_Value: 1
+          m_Value: 3
       m_Vector2f:
         m_Array: []
       m_Vector3f:
@@ -2205,7 +2205,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 1
+      m_SerializableObject: 3
     m_Space: 2147483647
   m_Property:
     name: Lifetime
