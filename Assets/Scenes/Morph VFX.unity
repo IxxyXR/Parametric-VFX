@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 920365076}
   - component: {fileID: 920365075}
   m_Layer: 0
-  m_Name: Parametric VFX
+  m_Name: Morph VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,7 +361,7 @@ VisualEffect:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 920365074}
   m_Enabled: 1
-  m_Asset: {fileID: 8926484042661614526, guid: 92cddf4e9dc5d8840a71756739b500f5, type: 3}
+  m_Asset: {fileID: 8926484042661614526, guid: e2be83e2cdd0bdd429e5530a5028db43, type: 3}
   m_StartSeed: 0
   m_ResetSeedOnPlay: 1
   m_PropertySheet:

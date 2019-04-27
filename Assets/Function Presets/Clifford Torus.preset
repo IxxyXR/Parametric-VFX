@@ -6,7 +6,7 @@ Preset:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Apple
+  m_Name: Clifford Torus
   m_TargetType:
     m_NativeTypeID: 114
     m_ManagedTypePPtr: {fileID: 11500000, guid: 651bb213a9d27476c9c46c9e3d72159f,
@@ -78,11 +78,11 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: UResolution
-    value: 100
+    value: 75
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: VResolution
-    value: 100
+    value: 150
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: UMinimum
@@ -90,15 +90,15 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: UMaximum
-    value: 2 * PI
+    value: ' PI'
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: VMinimum
-    value: -PI
+    value: 0
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: VMaximum
-    value: PI
+    value: 2*PI
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: ScaleFactor
@@ -166,5 +166,14 @@ Preset:
     objectReference: {fileID: 0}
   - target: {fileID: 0}
     propertyPath: SourceCode
-    value: 'position = float3(cos(u)*(4+3.8*cos(v)), sin(u)*(4+3.8*cos(v)), (cos(v)+sin(v)-1)*(1+sin(v))*log(1-PI*v/10)+7.5*sin(v)); '
+    value: 'position = float3(
+
+      cos(u+v)/(sqrt(2.)+cos(v-u)),
+
+      sin(u+v)/(sqrt(2.)+cos(v-u)),
+
+      sin(v-u)/(sqrt(2.)+cos(v-u))
+
+
+      );'
     objectReference: {fileID: 0}

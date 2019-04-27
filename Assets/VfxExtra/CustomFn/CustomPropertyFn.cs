@@ -6,7 +6,7 @@ using System.Linq;
 namespace UnityEditor.VFX.Block
 {
     [VFXInfo(category = "Custom")]
-    class CustomFn : VFXBlock
+    class CustomPropertyFn : VFXBlock
     {
 
         [Serializable]
@@ -23,7 +23,7 @@ namespace UnityEditor.VFX.Block
             public string type;
         }
         
-        public string BlockName = "Custom Function";
+        public string BlockName = "Custom Property Function";
         
         public int UResolution = 50;
         public int VResolution = 50;
@@ -43,8 +43,10 @@ namespace UnityEditor.VFX.Block
         public bool UseDeltaTime = false;
         public bool UseRandom = false;
 
-        [Multiline]
-        public string SourceCode = "";
+        public string PropertyName = "";
+        public string XFn = "";
+        public string YFn = "";
+        public string ZFn = "";
 
 
         public override string name { get { return BlockName + " (Custom)"; } }
@@ -112,10 +114,14 @@ float idV = fmod(int(index/UResolution) + voffset, VResolution);
 float u = lerp(newMinU, newMaxU, idU / UResolution);
 float v = lerp(newMinV, newMaxV, idV / VResolution);
 
-{6}
+{6} = float3(
+  {7},
+  {8},
+  {9}
+);
 
-position *= {7};
-", UResolution, VResolution, UMinimum, UMaximum, VMinimum, VMaximum, SourceCode, ScaleFactor);
+{6} *= {10};
+", UResolution, VResolution, UMinimum, UMaximum, VMinimum, VMaximum, PropertyName, XFn, YFn, ZFn, ScaleFactor);
             }
         }
 

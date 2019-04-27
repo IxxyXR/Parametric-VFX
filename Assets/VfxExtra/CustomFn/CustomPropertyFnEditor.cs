@@ -6,8 +6,8 @@ using System;
 
 namespace UnityEditor.VFX.Block
 {
-    [CustomEditor(typeof(CustomFn))]
-    public class CustomFnEditor : Editor
+    [CustomEditor(typeof(CustomPropertyFn))]
+    public class CustomPropertyFnEditor : Editor
     {
 
         SerializedProperty BlockName;
@@ -18,7 +18,10 @@ namespace UnityEditor.VFX.Block
         SerializedProperty UseTotalTime;
         SerializedProperty UseDeltaTime;
         SerializedProperty UseRandom;
-        SerializedProperty SourceCode;
+        SerializedProperty PropertyName;
+        SerializedProperty XFn;
+        SerializedProperty YFn;
+        SerializedProperty ZFn;
         SerializedProperty UResolution;
         SerializedProperty VResolution;
         SerializedProperty UMinimum;
@@ -45,7 +48,10 @@ namespace UnityEditor.VFX.Block
             UseTotalTime = serializedObject.FindProperty("UseTotalTime");
             UseDeltaTime = serializedObject.FindProperty("UseDeltaTime");
             UseRandom = serializedObject.FindProperty("UseRandom");
-            SourceCode = serializedObject.FindProperty("SourceCode");
+            PropertyName = serializedObject.FindProperty("PropertyName");
+            XFn = serializedObject.FindProperty("XFn");
+            YFn = serializedObject.FindProperty("YFn");
+            ZFn = serializedObject.FindProperty("ZFn");
             UResolution = serializedObject.FindProperty("UResolution");
             VResolution = serializedObject.FindProperty("VResolution");
             UMinimum = serializedObject.FindProperty("UMinimum");
@@ -163,7 +169,7 @@ namespace UnityEditor.VFX.Block
             var modeRect = rect;
             modeRect.xMin = split;
 
-            var knownTypes = CustomFn.knownTypes.Keys.ToArray();
+            var knownTypes = CustomPropertyFn.knownTypes.Keys.ToArray();
             var type = sp.FindPropertyRelative("type");
             var value = EditorGUI.Popup(modeRect, Array.IndexOf(knownTypes, type.stringValue), knownTypes);
             type.stringValue = knownTypes[value];
@@ -190,7 +196,10 @@ namespace UnityEditor.VFX.Block
             EditorGUILayout.PropertyField(UMaximum);
             EditorGUILayout.PropertyField(VMinimum);
             EditorGUILayout.PropertyField(VMaximum);
-            EditorGUILayout.PropertyField(SourceCode);
+            EditorGUILayout.PropertyField(PropertyName);
+            EditorGUILayout.PropertyField(XFn);
+            EditorGUILayout.PropertyField(YFn);
+            EditorGUILayout.PropertyField(ZFn);
             EditorGUILayout.PropertyField(ScaleFactor);
             
 
