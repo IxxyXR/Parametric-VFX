@@ -63,13 +63,13 @@ namespace UnityEditor.VFX.Block
             if (Attributes.arraySize == 0)
             {
                 AddAttribute("position", 2);
-                AddAttribute("particleId", 1);                
             }
 
             if (Properties.arraySize == 0)
             {
                 AddProperty("voffset", "float");
                 AddProperty("uoffset", "float");
+                AddProperty("index", "uint");                
             }
 
             dirty = false;

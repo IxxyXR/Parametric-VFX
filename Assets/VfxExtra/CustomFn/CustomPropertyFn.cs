@@ -105,7 +105,6 @@ float newMaxU = {3};
 float newMinV = {4};
 float newMaxV = {5};
 
-uint index = particleId;
 uoffset *= UResolution;
 voffset *= VResolution;
 
