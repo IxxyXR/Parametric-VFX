@@ -933,15 +933,19 @@ VisualEffectResource:
       VFX_HAS_INDIRECT_DRAW\nRWStructuredBuffer<uint> indirectBuffer;\n#endif\n\nCBUFFER_START(updateParams)\n
       \   uint nbMax;\n\tuint dispatchWidth;\n\tuint systemSeed;\nCBUFFER_END\n\nvoid
       CustomPropertyFn(inout float3 oldPosition, uint index, float uoffset, float
-      voffset)\n{\n    \n    uint UResolution = 50;\n    uint VResolution = 50;\n
-      \   \n    float newMinU = 0.0;\n    float newMaxU = 4 * PI;\n    float newMinV
-      = 0.0;\n    float newMaxV = 2 * PI;\n    \n    //uint index = particleId;\n
-      \   uoffset *= UResolution;\n    voffset *= VResolution;\n    \n    float idU
-      = fmod(index + uoffset, UResolution);\n    float idV = fmod(int(index/UResolution)
-      + voffset, VResolution);\n    \n    float u = lerp(newMinU, newMaxU, idU / UResolution);\n
-      \   float v = lerp(newMinV, newMaxV, idV / VResolution);\n    \n    oldPosition
-      = float3(\n      (1-0.1*cos(v))*cos(u),\n      (1-0.1*cos(v))*sin(u),\n      0.1*(sin(v)+u/1.7-10)\n
-      \   );\n    \n    oldPosition *= 8;\n    \n}\nvoid SetAttribute_CAC29747(inout
+      voffset)\n{\n    \n    \n    // Declare a dummy time variable that some Mathmod
+      presets use\n    float t = 0;\n    \n    // How many steps in U and V directions\n
+      \   uint UResolution = 50;\n    uint VResolution = 50;\n    \n    // The range
+      of the function\n    float newMinU = 0;\n    float newMaxU = 4*PI;\n    float
+      newMinV = 0;\n    float newMaxV = 2*PI;\n    \n    // Scale the offset (0 to
+      1) to our actual UV range\n    uoffset *= UResolution;\n    voffset *= VResolution;\n
+      \   \n    // calculate the UV from the particleID\n    float idU = fmod(index
+      + uoffset, UResolution);\n    float idV = fmod(int(index/UResolution) + voffset,
+      VResolution);\n    float u = lerp(newMinU, newMaxU, idU / UResolution);\n    float
+      v = lerp(newMinV, newMaxV, idV / VResolution);\n    \n    // Our SetupFn\n    \n
+      \   \n    // Calculate the desired property\n    oldPosition = float3(\n      (1-0.1*cos(v))*cos(u),\n
+      \     (1-0.1*cos(v))*sin(u),\n      0.1*(sin(v)+u/1.7-10)\n    );\n    \n    //
+      Apply our scale factor\n    oldPosition *= 6;\n    \n    \n}\nvoid SetAttribute_CAC29747(inout
       float3 position, float3 Position) /*attribute:position Composition:Overwrite
       Source:Slot Random:Off channels:XYZ */\n{\n    position = Position;\n}\nvoid
       Age(inout float age, float deltaTime)\n{\n    age += deltaTime;\n}\nvoid Reap(float
@@ -1003,36 +1007,40 @@ VisualEffectResource:
       VFX_HAS_INDIRECT_DRAW\nRWStructuredBuffer<uint> indirectBuffer;\n#endif\n\nCBUFFER_START(updateParams)\n
       \   uint nbMax;\n\tuint dispatchWidth;\n\tuint systemSeed;\nCBUFFER_END\n\nvoid
       CustomPropertyFn(inout float3 targetPosition, uint index, float uoffset, float
-      voffset)\n{\n    \n    uint UResolution = 50;\n    uint VResolution = 50;\n
-      \   \n    float newMinU = 0.0;\n    float newMaxU = 2 * PI;\n    float newMinV
-      = -PI;\n    float newMaxV = PI;\n    \n    //uint index = particleId;\n    uoffset
-      *= UResolution;\n    voffset *= VResolution;\n    \n    float idU = fmod(index
+      voffset)\n{\n    \n    \n    // Declare a dummy time variable that some Mathmod
+      presets use\n    float t = 0;\n    \n    // How many steps in U and V directions\n
+      \   uint UResolution = 50;\n    uint VResolution = 50;\n    \n    // The range
+      of the function\n    float newMinU = 0;\n    float newMaxU = 2*PI;\n    float
+      newMinV = -PI;\n    float newMaxV = PI;\n    \n    // Scale the offset (0 to
+      1) to our actual UV range\n    uoffset *= UResolution;\n    voffset *= VResolution;\n
+      \   \n    // calculate the UV from the particleID\n    float idU = fmod(index
       + uoffset, UResolution);\n    float idV = fmod(int(index/UResolution) + voffset,
-      VResolution);\n    \n    float u = lerp(newMinU, newMaxU, idU / UResolution);\n
-      \   float v = lerp(newMinV, newMaxV, idV / VResolution);\n    \n    targetPosition
-      = float3(\n      cos(u)*(4+3.8*cos(v)),\n      sin(u)*(4+3.8*cos(v)),\n      (cos(v)+sin(v)-1)*(1+sin(v))*log(1-PI*v/10)+7.5*sin(v)\n
-      \   );\n    \n    targetPosition *= 1;\n    \n}\nvoid Age(inout float age, float
-      deltaTime)\n{\n    age += deltaTime;\n}\nvoid Reap(float age, float lifetime,
-      inout bool alive)\n{\n    if(age > lifetime) { alive = false; }\n}\n\n\n\n[numthreads(NB_THREADS_PER_GROUP,1,1)]\nvoid
-      CSMain(uint3 groupId          : SV_GroupID,\n            uint3 groupThreadId
-      \   : SV_GroupThreadID)\n{\n\tuint id = groupThreadId.x + groupId.x * NB_THREADS_PER_GROUP
-      + groupId.y * dispatchWidth * NB_THREADS_PER_GROUP;\n\tuint index = id;\n\tif
-      (id < nbMax)\n\t{\n#if VFX_USE_ALIVE_CURRENT\n\t\tbool alive = (attributeBuffer.Load((index
-      * 0x2 + 0x1B7980) << 2));\n\t\t\n\n\t\tif (alive)\n\t\t{\n\t\t\tfloat lifetime
-      = asfloat(attributeBuffer.Load((index * 0x1 + 0x0) << 2));\n\t\t\tfloat3 targetPosition
-      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x7A1C0) << 2));\n\t\t\tuint
-      particleId = (attributeBuffer.Load((index * 0x1 + 0xDBCC0) << 2));\n\t\t\tfloat3
-      oldPosition = asfloat(attributeBuffer.Load3((index * 0x4 + 0xF4380) << 2));\n\t\t\tfloat3
-      position = asfloat(attributeBuffer.Load3((index * 0x4 + 0x155E80) << 2));\n\t\t\tfloat
-      age = asfloat(attributeBuffer.Load((index * 0x2 + 0x1B7981) << 2));\n\t\t\t\n\n\t\t\t\n#if
-      VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition = position;\n#endif\n\t\t\t\n\t\t\tCustomPropertyFn(
-      /*inout */targetPosition, particleId, uoffset_a, voffset_a);\n\t\t\tAge( /*inout
-      */age, deltaTime_b);\n\t\t\tReap(age, lifetime,  /*inout */alive);\n\t\t\t\n\n\t\t\tif
-      (alive)\n\t\t\t{\n\t\t\t\tattributeBuffer.Store3((index * 0x4 + 0x7A1C0) <<
-      2,asuint(targetPosition));\n\t\t\t\tattributeBuffer.Store3((index * 0x4 + 0xF4380)
-      << 2,asuint(oldPosition));\n\t\t\t\tattributeBuffer.Store((index * 0x2 + 0x1B7981)
-      << 2,asuint(age));\n\t\t\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n                uint
-      indirectIndex = indirectBuffer.IncrementCounter();\n\t\t\t\tindirectBuffer[indirectIndex]
+      VResolution);\n    float u = lerp(newMinU, newMaxU, idU / UResolution);\n    float
+      v = lerp(newMinV, newMaxV, idV / VResolution);\n    \n    // Our SetupFn\n    \n
+      \   \n    // Calculate the desired property\n    targetPosition = float3(\n
+      \     cos(u)*(4+3.8*cos(v)),\n      sin(u)*(4+3.8*cos(v)),\n      (cos(v)+sin(v)-1)*(1+sin(v))*log(1-PI*v/10)+7.5*sin(v)\n
+      \   );\n    \n    // Apply our scale factor\n    targetPosition *= 1;\n    \n
+      \   \n}\nvoid Age(inout float age, float deltaTime)\n{\n    age += deltaTime;\n}\nvoid
+      Reap(float age, float lifetime, inout bool alive)\n{\n    if(age > lifetime)
+      { alive = false; }\n}\n\n\n\n[numthreads(NB_THREADS_PER_GROUP,1,1)]\nvoid CSMain(uint3
+      groupId          : SV_GroupID,\n            uint3 groupThreadId    : SV_GroupThreadID)\n{\n\tuint
+      id = groupThreadId.x + groupId.x * NB_THREADS_PER_GROUP + groupId.y * dispatchWidth
+      * NB_THREADS_PER_GROUP;\n\tuint index = id;\n\tif (id < nbMax)\n\t{\n#if VFX_USE_ALIVE_CURRENT\n\t\tbool
+      alive = (attributeBuffer.Load((index * 0x2 + 0x1B7980) << 2));\n\t\t\n\n\t\tif
+      (alive)\n\t\t{\n\t\t\tfloat lifetime = asfloat(attributeBuffer.Load((index *
+      0x1 + 0x0) << 2));\n\t\t\tfloat3 targetPosition = asfloat(attributeBuffer.Load3((index
+      * 0x4 + 0x7A1C0) << 2));\n\t\t\tuint particleId = (attributeBuffer.Load((index
+      * 0x1 + 0xDBCC0) << 2));\n\t\t\tfloat3 oldPosition = asfloat(attributeBuffer.Load3((index
+      * 0x4 + 0xF4380) << 2));\n\t\t\tfloat3 position = asfloat(attributeBuffer.Load3((index
+      * 0x4 + 0x155E80) << 2));\n\t\t\tfloat age = asfloat(attributeBuffer.Load((index
+      * 0x2 + 0x1B7981) << 2));\n\t\t\t\n\n\t\t\t\n#if VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition
+      = position;\n#endif\n\t\t\t\n\t\t\tCustomPropertyFn( /*inout */targetPosition,
+      particleId, uoffset_a, voffset_a);\n\t\t\tAge( /*inout */age, deltaTime_b);\n\t\t\tReap(age,
+      lifetime,  /*inout */alive);\n\t\t\t\n\n\t\t\tif (alive)\n\t\t\t{\n\t\t\t\tattributeBuffer.Store3((index
+      * 0x4 + 0x7A1C0) << 2,asuint(targetPosition));\n\t\t\t\tattributeBuffer.Store3((index
+      * 0x4 + 0xF4380) << 2,asuint(oldPosition));\n\t\t\t\tattributeBuffer.Store((index
+      * 0x2 + 0x1B7981) << 2,asuint(age));\n\t\t\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n
+      \               uint indirectIndex = indirectBuffer.IncrementCounter();\n\t\t\t\tindirectBuffer[indirectIndex]
       = index;\n#endif\n\t\t\t}\n\t\t\telse\n\t\t\t{\n\t\t\t\tattributeBuffer.Store((index
       * 0x2 + 0x1B7980) << 2,uint(alive));\n\t\t\t\t\n\n\t\t\t\tuint deadIndex = deadListOut.IncrementCounter();\n\t\t\t\tdeadListOut[deadIndex]
       = index;\n\t\t\t}\n\t\t}\n#else\n\t\tfloat lifetime = asfloat(attributeBuffer.Load((index
@@ -4519,11 +4527,11 @@ MonoBehaviour:
   BlockName: Helix Property Function
   UResolution: 50
   VResolution: 50
-  UMinimum: 0.0
-  UMaximum: 4 * PI
-  VMinimum: 0.0
-  VMaximum: 2 * PI
-  ScaleFactor: 8
+  UMinimum: 0
+  UMaximum: 4*PI
+  VMinimum: 0
+  VMaximum: 2*PI
+  ScaleFactor: 6
   ContextType: 14
   CompatibleData: 2
   Attributes:
@@ -4540,6 +4548,7 @@ MonoBehaviour:
   UseDeltaTime: 0
   UseRandom: 0
   PropertyName: oldPosition
+  SetupFn: 
   XFn: (1-0.1*cos(v))*cos(u)
   YFn: (1-0.1*cos(v))*sin(u)
   ZFn: 0.1*(sin(v)+u/1.7-10)
@@ -4672,8 +4681,8 @@ MonoBehaviour:
   BlockName: Apple Property Function
   UResolution: 50
   VResolution: 50
-  UMinimum: 0.0
-  UMaximum: 2 * PI
+  UMinimum: 0
+  UMaximum: 2*PI
   VMinimum: -PI
   VMaximum: PI
   ScaleFactor: 1
@@ -4693,6 +4702,7 @@ MonoBehaviour:
   UseDeltaTime: 0
   UseRandom: 0
   PropertyName: targetPosition
+  SetupFn: 
   XFn: cos(u)*(4+3.8*cos(v))
   YFn: sin(u)*(4+3.8*cos(v))
   ZFn: (cos(v)+sin(v)-1)*(1+sin(v))*log(1-PI*v/10)+7.5*sin(v)

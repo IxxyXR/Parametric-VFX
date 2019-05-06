@@ -44,9 +44,10 @@ namespace UnityEditor.VFX.Block
         public bool UseRandom = false;
 
         public string PropertyName = "position";
-        public string XFn = "u";
-        public string YFn = "0";
-        public string ZFn = "v";
+        [Multiline]public string SetupFn = "";
+        [Multiline]public string XFn = "u";
+        [Multiline]public string YFn = "0";
+        [Multiline]public string ZFn = "v";
 
 
         public override string name { get { return BlockName + " (Custom)"; } }
@@ -97,31 +98,44 @@ namespace UnityEditor.VFX.Block
             get
             {
                 return String.Format(@"
+
+// Declare a dummy time variable that some Mathmod presets use
+float t = 0;
+
+// How many steps in U and V directions
 uint UResolution = {0};
 uint VResolution = {1};
 
+// The range of the function
 float newMinU = {2};
 float newMaxU = {3};
 float newMinV = {4};
 float newMaxV = {5};
 
+// Scale the offset (0 to 1) to our actual UV range
 uoffset *= UResolution;
 voffset *= VResolution;
 
+// calculate the UV from the particleID
 float idU = fmod(index + uoffset, UResolution);
 float idV = fmod(int(index/UResolution) + voffset, VResolution);
-
 float u = lerp(newMinU, newMaxU, idU / UResolution);
 float v = lerp(newMinV, newMaxV, idV / VResolution);
 
-{6} = float3(
-  {7},
+// Our SetupFn
+{6}
+
+// Calculate the desired property
+{7} = float3(
   {8},
-  {9}
+  {9},
+  {10}
 );
 
-{6} *= {10};
-", UResolution, VResolution, UMinimum, UMaximum, VMinimum, VMaximum, PropertyName, XFn, YFn, ZFn, ScaleFactor);
+// Apply our scale factor
+{7} *= {11};
+
+", UResolution, VResolution, UMinimum, UMaximum, VMinimum, VMaximum, SetupFn, PropertyName, XFn, YFn, ZFn, ScaleFactor);
             }
         }
 

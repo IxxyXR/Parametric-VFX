@@ -37,3 +37,4 @@ sysinfo.txt
 *.unitypackage
 
 .idea/
+Assets/Plugins/Editor/JetBrains/*

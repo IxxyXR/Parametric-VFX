@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditorInternal;
 using System;
+using System.IO;
+using QuickType;
+
 
 namespace UnityEditor.VFX.Block
 {
@@ -19,6 +22,7 @@ namespace UnityEditor.VFX.Block
         SerializedProperty UseDeltaTime;
         SerializedProperty UseRandom;
         SerializedProperty PropertyName;
+        SerializedProperty SetupFn;
         SerializedProperty XFn;
         SerializedProperty YFn;
         SerializedProperty ZFn;
@@ -32,12 +36,32 @@ namespace UnityEditor.VFX.Block
 
         ReorderableList attributeList;
         ReorderableList propertiesList;
-
+        
+        public List<string> presetNames;
+        public List<MathModel> presetParams;
+        
+        MathmodPresets mathmodPresets;
+        public int presetIndex = 0;
 
         bool dirty;
 
         private void OnEnable()
         {
+            StreamReader reader = new StreamReader("Assets/MathModPresets/mathmodcollection.json"); 
+            string jsonString = reader.ReadToEnd();
+            reader.Close();
+            mathmodPresets = MathmodPresets.FromJson(jsonString);
+            presetNames = new List<string> {"(Choose a preset)"};
+            presetParams = new List<MathModel>{ null };
+            foreach (var p in mathmodPresets.MathModels)
+            {
+                if (p.Param3D != null && p.Param3D["Name"].Count == 1)
+                {
+                    presetNames.Add(p.Param3D["Name"][0]);
+                    presetParams.Add(p);
+                }
+            }
+            
             Reload();
             
             BlockName = serializedObject.FindProperty("BlockName");
@@ -49,6 +73,7 @@ namespace UnityEditor.VFX.Block
             UseDeltaTime = serializedObject.FindProperty("UseDeltaTime");
             UseRandom = serializedObject.FindProperty("UseRandom");
             PropertyName = serializedObject.FindProperty("PropertyName");
+            SetupFn = serializedObject.FindProperty("SetupFn");
             XFn = serializedObject.FindProperty("XFn");
             YFn = serializedObject.FindProperty("YFn");
             ZFn = serializedObject.FindProperty("ZFn");
@@ -162,7 +187,6 @@ namespace UnityEditor.VFX.Block
 
         void OnRemoveProperty(ReorderableList list)
         {
-
             if (list.index != -1)
                 Properties.DeleteArrayElementAtIndex(list.index);
             dirty = true;
@@ -201,6 +225,26 @@ namespace UnityEditor.VFX.Block
 
         public override void OnInspectorGUI()
         {
+            
+            presetIndex = EditorGUILayout.Popup(presetIndex, presetNames.ToArray());
+            if (presetIndex > 0)
+            {
+                string setupFn = "";
+                if (presetParams[presetIndex].Param3D.ContainsKey("Const"))
+                    setupFn += BuildConsts(presetParams[presetIndex].Param3D["Const"]);
+                if (presetParams[presetIndex].Param3D.ContainsKey("Funct"))
+                    setupFn += BuildFuncts(presetParams[presetIndex].Param3D["Funct"]);
+                SetupFn.stringValue = setupFn;
+                UMaximum.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Umax"][0]);
+                UMinimum.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Umin"][0]);
+                VMaximum.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Vmax"][0]);
+                VMinimum.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Vmin"][0]);
+                XFn.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Fx"][0]);
+                YFn.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Fy"][0]);
+                ZFn.stringValue = ConvertMathModFn(presetParams[presetIndex].Param3D["Fz"][0]);
+                presetIndex = 0;
+                dirty = true;
+            }
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(BlockName);
@@ -218,12 +262,12 @@ namespace UnityEditor.VFX.Block
             EditorGUILayout.PropertyField(VMinimum);
             EditorGUILayout.PropertyField(VMaximum);
             EditorGUILayout.PropertyField(PropertyName);
+            EditorGUILayout.PropertyField(SetupFn);
             EditorGUILayout.PropertyField(XFn);
             EditorGUILayout.PropertyField(YFn);
             EditorGUILayout.PropertyField(ZFn);
             EditorGUILayout.PropertyField(ScaleFactor);
             
-
             if (EditorGUI.EndChangeCheck())
                 dirty = true;
 
@@ -233,9 +277,51 @@ namespace UnityEditor.VFX.Block
                 {
                     Apply();
                 }
-
             }
 
+        }
+
+        static string ConvertMathModFn(string input)
+        {
+            // Pick some random values until I figure out what these are used for.
+            if (input == "umin" || input == "vmin")
+                return "0";
+            else if (input == "umax" || input == "vmax")
+                return "100";
+            else
+            {
+                // Fix some of the oddities in the Mathmod format
+                return input.Replace("pi", "PI")
+                    .Replace("DOTSYMBOL", ".");
+            }
+        }
+
+        static string BuildFuncts(List<string> inputs)
+        {
+            // Takes a list of Mathmod functions declarations, reformats them as HLSL functions
+            // and returns as a multiline string
+            string output = "\n";
+            foreach (var part in inputs)
+            {
+                string converted = "#define " + ConvertMathModFn(part) + "\n\n";
+                converted = converted.Replace("=", "(u, v, t) ");
+                output += converted;
+            }
+
+            return output;
+        }
+        
+        static string BuildConsts(List<string> inputs)
+        {
+            // Takes a list of Mathmod const declarations, adds type, semicolon
+            // and returns as a multiline string
+            string output = "";
+            foreach (var part in inputs)
+            {
+                output += "float " + ConvertMathModFn(part) + ";\n";
+            }
+
+            return output;
         }
 
         void Apply()
