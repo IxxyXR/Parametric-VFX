@@ -74,8 +74,6 @@ namespace UnityEditor.VFX.Block
             get
             {
                 string Source = @"
-#define SIMPLE_SINE(p) float3(cos(p.y),0,sin(p.y))
-#define VECTOR_FN SIMPLE_SINE
 
 float3 vectorFieldCoord = mul(InvFieldTransform, float4(position,1.0f)).xyz;";
 
@@ -88,6 +86,18 @@ if (abs(vectorFieldCoord.x) > 0.5f || abs(vectorFieldCoord.y) > 0.5f || abs(vect
 
   float3 p = vectorFieldCoord.xyz;
 
+//  float2 v = float2(0, 0);
+//  float2 c0 = float2(0,0);
+//  float4 abcd = float4(-2, 0, 0, 1);
+//  float N = 2.0;
+//  float2 p0 = p - c0;  
+//  float theta = atan(p0.y, p0.x);
+//  float c = cos(N * theta);
+//  float s = sin(N * theta);
+//  v = length(p0) * vec2(abcd[2] * c + abcd[3] * s, abcd[0] * c + abcd[1] * s);
+
+
+//////////////////////////
 //  float3 value = float3(0,0,0);
 //  float twirl_size = 20.0;
 //  float radial_exponent = 1.5;
@@ -97,26 +107,14 @@ if (abs(vectorFieldCoord.x) > 0.5f || abs(vectorFieldCoord.y) > 0.5f || abs(vect
 //  value.x += radial_coeff*sin(twirl_size*p.y);
 //  value.y += radial_coeff*cos(twirl_size*p.x);
 
+//////////////////////////
 float3 value = float3(0,0,0);
 value.x = sin(tan(p.x))*cos(tan(p.y));
 value.y = sin(tan(p.y))*cos(tan(p.x));
 
-
-//vec2 tensor(vec2 p, vec2 c0, vec4 abcd, float N) {
-//  vec2 p0 = p - c0;  
-//  float theta = atan(p0.y, p0.x);
-//  float c = cos(N * theta);
-//  float s = sin(N * theta);
-//  return length(p0) * vec2(abcd[2] * c + abcd[3] * s, 
-//              abcd[0] * c + abcd[1] * s);
-//}
-//
-//vec2 get_velocity(vec2 p) {
-//  vec2 v = vec2(0., 0.);
-//  v = tensor(p, vec2(0., 0.), vec4(-2., 0., 0., 1.), 2.);
-//  return v;
-//}
-
+//////////////////////////
+//#define SIMPLE_SINE(p) float3(cos(p.y),0,sin(p.y))
+//#define VECTOR_FN SIMPLE_SINE
 //float3 value = VECTOR_FN(vectorFieldCoord.xyz);");
 
                 if (ConserveMagnitude)

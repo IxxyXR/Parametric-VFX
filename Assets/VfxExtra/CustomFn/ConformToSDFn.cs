@@ -16,8 +16,7 @@ namespace UnityEditor.VFX.Block
                 foreach (var input in GetExpressionsFromSlots(this))
                 {
                     if (input.name == "FieldTransform")
-                        yield return new VFXNamedExpression(new VFXExpressionInverseTRSMatrix(input.exp),
-                            "InvFieldTransform");
+                        yield return new VFXNamedExpression(new VFXExpressionInverseMatrix(input.exp), "InvFieldTransform");
                     yield return input;
                 }
 
@@ -47,7 +46,9 @@ namespace UnityEditor.VFX.Block
         public override string source =>
             @"
 
-#define SPHERE(p) length(p) - 8.5
+#define mod(x, y) x - y * floor(x / y)
+
+#define SPHERE(p) length(p) - 1.0
 #define CYLINDER(p) (max(length(p.xz) - 4.5, abs(p.y) - 1.5));
 #define SPHERES(p) (((p.x-0.9)*(p.x-0.9)+p.y*p.y+p.z*p.z-1)*((p.x+0.9)*(p.x+0.9)+p.y*p.y+p.z*p.z-1)-0.3)
 #define DISTANCE_FN5(p) (pow(p.x,2)+pow(p.y,2)-(1-p.z)*pow(p.z,2))
@@ -55,7 +56,12 @@ namespace UnityEditor.VFX.Block
 #define CAPSULE(p) (lerp(length(p.xz) - 2, length(float3(p.x, abs(p.y) - 3, p.z)) - 2, step(3, abs(p.y))))
 #define HEXPRISM(p) (max(abs(p).y - 3, max(abs(p).x*sqrt(3.0)*0.5 + abs(p).z*0.5, abs(p).z) - 4))
 
-#define DISTANCE_FN HEXPRISM
+#define pMod2(p, c) mod(p,c)-0.5*c
+
+#define FOO(q) length(pMod2(q, float3(4.0,4.0,4.0))) - 1.8
+
+
+#define DISTANCE_FN FOO
 
 
 //float3 tPos = mul(InvFieldTransform, float4(position,1.0f)).xyz;
