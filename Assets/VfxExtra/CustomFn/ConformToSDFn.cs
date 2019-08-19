@@ -6,8 +6,8 @@ namespace UnityEditor.VFX.Block
     class ConformToSDFn : VFXBlock
     {
         public override string name => "Conform to Signed Distance Function";
-        public override VFXContextType compatibleContexts => VFXContextType.kUpdate;
-        public override VFXDataType compatibleData => VFXDataType.kParticle;
+        public override VFXContextType compatibleContexts => VFXContextType.Update;
+        public override VFXDataType compatibleData => VFXDataType.Particle;
 
         public override IEnumerable<VFXNamedExpression> parameters
         {

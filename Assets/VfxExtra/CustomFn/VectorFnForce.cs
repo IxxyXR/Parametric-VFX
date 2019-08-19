@@ -29,8 +29,8 @@ namespace UnityEditor.VFX.Block
         bool ConserveMagnitude = false;
 
         public override string name { get { return "Vector Fn Force"; } }
-        public override VFXContextType compatibleContexts { get { return VFXContextType.kUpdate; } }
-        public override VFXDataType compatibleData { get { return VFXDataType.kParticle; } }
+        public override VFXContextType compatibleContexts { get { return VFXContextType.Update; } }
+        public override VFXDataType compatibleData { get { return VFXDataType.Particle; } }
 
         public override IEnumerable<VFXAttributeInfo> attributes
         {
@@ -86,11 +86,13 @@ if (abs(vectorFieldCoord.x) > 0.5f || abs(vectorFieldCoord.y) > 0.5f || abs(vect
 
   float3 p = vectorFieldCoord.xyz;
 
+//////////////////////////
+
 //  float2 v = float2(0, 0);
 //  float2 c0 = float2(0,0);
 //  float4 abcd = float4(-2, 0, 0, 1);
 //  float N = 2.0;
-//  float2 p0 = p - c0;  
+//  float2 p0 = p - c0;
 //  float theta = atan(p0.y, p0.x);
 //  float c = cos(N * theta);
 //  float s = sin(N * theta);
@@ -108,9 +110,51 @@ if (abs(vectorFieldCoord.x) > 0.5f || abs(vectorFieldCoord.y) > 0.5f || abs(vect
 //  value.y += radial_coeff*cos(twirl_size*p.x);
 
 //////////////////////////
-float3 value = float3(0,0,0);
-value.x = sin(tan(p.x))*cos(tan(p.y));
-value.y = sin(tan(p.y))*cos(tan(p.x));
+//float3 value = float3(0,0,0);
+//value.x = sin(tan(p.x))*cos(tan(p.y));
+//value.y = sin(tan(p.y))*cos(tan(p.x));
+
+//////////////////////////
+//float3 value = float3(0,0,0);
+//value.x = sin(p.x * 4.0);
+//value.y = cos(p.y * 4.0);
+//value.z = cos(p.z * 4.0);
+
+
+//float3 value = float3(0,0,0);
+//value.x = sin(pow(p.x, 2)/8.0 + pow(p.y, 2)/8.0);
+//value.y = cos(pow(p.y, 2)/8.0 + pow(p.z, 2)/8.0);
+//value.z = sin(pow(p.z, 2)/8.0 + pow(p.x, 2)/8.0);
+
+
+//float3 value = float3(-p.y, p.x, p.z);
+
+
+float3 q = p + float3(-4.0, 0, 0);
+float3 value = float3(-q.y, q.x, q.z) * exp(-length(q)*length(q) * 0.4);
+q = p + float3(4.0, 0, 0);
+value += float3(-q.y, q.x, q.z) * exp(-length(q)*length(q) * 0.4);
+value *= 12.0;
+
+
+
+//////////////////////////
+//float3 value = float3(0,0,0);
+//value.x = sin(p.x % 1.0);
+//value.y = cos(p.y % 1.0);
+
+//////////////////////////
+//float3 value = float3(0,0,0);
+//value.x = -p.x % 1.0;
+//value.y = -p.y % 1.0;
+//value.z = -p.z % 1.0;
+
+//////////////////////////
+//float3 value = float3(0,0,0);
+//value.x = p.x * p.x;
+//value.y = p.y * p.y;
+//value.z = p.z * p.z;
+
 
 //////////////////////////
 //#define SIMPLE_SINE(p) float3(cos(p.y),0,sin(p.y))
