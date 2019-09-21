@@ -1573,41 +1573,55 @@ VisualEffectResource:
       deltaTime) /*DataEncoding:UnsignedNormalized Mode:Relative ClosedField:False
       ConserveMagnitude:False */\n{\n    \n    \n    float3 vectorFieldCoord = mul(InvFieldTransform,
       float4(position,1.0f)).xyz;\n    \n      float3 p = vectorFieldCoord.xyz;\n   
-      \n    //  float2 v = float2(0, 0);\n    //  float2 c0 = float2(0,0);\n    // 
-      float4 abcd = float4(-2, 0, 0, 1);\n    //  float N = 2.0;\n    //  float2
-      p0 = p - c0;  \n    //  float theta = atan(p0.y, p0.x);\n    //  float c =
-      cos(N * theta);\n    //  float s = sin(N * theta);\n    //  v = length(p0)
-      * vec2(abcd[2] * c + abcd[3] * s, abcd[0] * c + abcd[1] * s);\n    \n    \n   
-      //////////////////////////\n    //  float3 value = float3(0,0,0);\n    // 
-      float twirl_size = 20.0;\n    //  float radial_exponent = 1.5;\n    //  float
-      radial_coeff = pow(length(p), radial_exponent);\n    //  value.x = -p.y/length(p);\n   
+      \n    //////////////////////////\n    \n    //  float2 v = float2(0, 0);\n   
+      //  float2 c0 = float2(0,0);\n    //  float4 abcd = float4(-2, 0, 0, 1);\n   
+      //  float N = 2.0;\n    //  float2 p0 = p - c0;\n    //  float theta = atan(p0.y,
+      p0.x);\n    //  float c = cos(N * theta);\n    //  float s = sin(N * theta);\n   
+      //  v = length(p0) * vec2(abcd[2] * c + abcd[3] * s, abcd[0] * c + abcd[1]
+      * s);\n    \n    \n    //////////////////////////\n    //  float3 value = float3(0,0,0);\n   
+      //  float twirl_size = 20.0;\n    //  float radial_exponent = 1.5;\n    // 
+      float radial_coeff = pow(length(p), radial_exponent);\n    //  value.x = -p.y/length(p);\n   
       //  value.y = p.x/length(p);\n    //  value.x += radial_coeff*sin(twirl_size*p.y);\n   
       //  value.y += radial_coeff*cos(twirl_size*p.x);\n    \n    //////////////////////////\n   
-      float3 value = float3(0,0,0);\n    value.x = sin(tan(p.x))*cos(tan(p.y));\n   
-      value.y = sin(tan(p.y))*cos(tan(p.x));\n    \n    //////////////////////////\n   
-      //#define SIMPLE_SINE(p) float3(cos(p.y),0,sin(p.y))\n    //#define VECTOR_FN
-      SIMPLE_SINE\n    //float3 value = VECTOR_FN(vectorFieldCoord.xyz);\n    value
-      = mul(FieldTransform,float4(value,0.0f)).xyz;\n    \n    velocity += ((value
-      * Intensity) - velocity) * min(1.0f,Drag * deltaTime / mass);\n}\nvoid SetAttribute_2CF4000A(inout
-      float3 targetPosition, float3 TargetPosition) /*attribute:targetPosition Composition:Overwrite
-      Source:Slot Random:Off channels:XYZ */\n{\n    targetPosition = TargetPosition;\n}\nvoid
-      GPUEventAlways(inout uint eventCount, uint count)\n{\n    eventCount = count;\n}\nvoid
-      EulerIntegration(inout float3 position, float3 velocity, float deltaTime)\n{\n   
-      position += velocity * deltaTime;\n}\nvoid Age(inout float age, float deltaTime)\n{\n   
-      age += deltaTime;\n}\nvoid Reap(float age, float lifetime, inout bool alive)\n{\n   
-      if(age > lifetime) { alive = false; }\n}\n\n\n\n[numthreads(NB_THREADS_PER_GROUP,1,1)]\nvoid
-      CSMain(uint3 groupId          : SV_GroupID,\n            uint3 groupThreadId   
-      : SV_GroupThreadID)\n{\n\tuint id = groupThreadId.x + groupId.x * NB_THREADS_PER_GROUP
-      + groupId.y * dispatchWidth * NB_THREADS_PER_GROUP;\n\tuint index = id;\n\tif
-      (id < nbMax)\n\t{\n#if VFX_USE_ALIVE_CURRENT\n\t\tbool alive = (attributeBuffer.Load((index
-      * 0x1 + 0x13D7C0) << 2));\n\t\t\n\n\t\tif (alive)\n\t\t{\n\t\t\tfloat lifetime
-      = asfloat(attributeBuffer.Load((index * 0x1 + 0x0) << 2));\n\t\t\tfloat3 position
-      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x186C0) << 2));\n\t\t\tfloat3
-      velocity = asfloat(attributeBuffer.Load3((index * 0x4 + 0xDBCC0) << 2));\n\t\t\tfloat
-      mass = (float)1;\n\t\t\tfloat3 targetPosition = asfloat(attributeBuffer.Load3((index
-      * 0x4 + 0x155E80) << 2));\n\t\t\tuint eventCount_a = 0u;\n\t\t\tuint eventCount
-      = (uint)0;\n\t\t\tfloat age = asfloat(attributeBuffer.Load((index * 0x4 + 0xDBCC3)
-      << 2));\n\t\t\t\n\n\t\t\t\n#if VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition
+      //float3 value = float3(0,0,0);\n    //value.x = sin(tan(p.x))*cos(tan(p.y));\n   
+      //value.y = sin(tan(p.y))*cos(tan(p.x));\n    \n    //////////////////////////\n   
+      //float3 value = float3(0,0,0);\n    //value.x = sin(p.x * 4.0);\n    //value.y
+      = cos(p.y * 4.0);\n    //value.z = cos(p.z * 4.0);\n    \n    \n    //float3
+      value = float3(0,0,0);\n    //value.x = sin(pow(p.x, 2)/8.0 + pow(p.y, 2)/8.0);\n   
+      //value.y = cos(pow(p.y, 2)/8.0 + pow(p.z, 2)/8.0);\n    //value.z = sin(pow(p.z,
+      2)/8.0 + pow(p.x, 2)/8.0);\n    \n    \n    //float3 value = float3(-p.y, p.x,
+      p.z);\n    \n    \n    float3 q = p + float3(-4.0, 0, 0);\n    float3 value
+      = float3(-q.y, q.x, q.z) * exp(-length(q)*length(q) * 0.4);\n    q = p + float3(4.0,
+      0, 0);\n    value += float3(-q.y, q.x, q.z) * exp(-length(q)*length(q) * 0.4);\n   
+      value *= 12.0;\n    \n    \n    \n    //////////////////////////\n    //float3
+      value = float3(0,0,0);\n    //value.x = sin(p.x % 1.0);\n    //value.y = cos(p.y
+      % 1.0);\n    \n    //////////////////////////\n    //float3 value = float3(0,0,0);\n   
+      //value.x = -p.x % 1.0;\n    //value.y = -p.y % 1.0;\n    //value.z = -p.z
+      % 1.0;\n    \n    //////////////////////////\n    //float3 value = float3(0,0,0);\n   
+      //value.x = p.x * p.x;\n    //value.y = p.y * p.y;\n    //value.z = p.z * p.z;\n   
+      \n    \n    //////////////////////////\n    //#define SIMPLE_SINE(p) float3(cos(p.y),0,sin(p.y))\n   
+      //#define VECTOR_FN SIMPLE_SINE\n    //float3 value = VECTOR_FN(vectorFieldCoord.xyz);\n   
+      value = mul(FieldTransform,float4(value,0.0f)).xyz;\n    \n    velocity +=
+      ((value * Intensity) - velocity) * min(1.0f,Drag * deltaTime / mass);\n}\nvoid
+      SetAttribute_2CF4000A(inout float3 targetPosition, float3 TargetPosition) /*attribute:targetPosition
+      Composition:Overwrite Source:Slot Random:Off channels:XYZ */\n{\n    targetPosition
+      = TargetPosition;\n}\nvoid GPUEventAlways(inout uint eventCount, uint count)\n{\n   
+      eventCount = count;\n}\nvoid EulerIntegration(inout float3 position, float3
+      velocity, float deltaTime)\n{\n    position += velocity * deltaTime;\n}\nvoid
+      Age(inout float age, float deltaTime)\n{\n    age += deltaTime;\n}\nvoid Reap(float
+      age, float lifetime, inout bool alive)\n{\n    if(age > lifetime) { alive =
+      false; }\n}\n\n\n\n[numthreads(NB_THREADS_PER_GROUP,1,1)]\nvoid CSMain(uint3
+      groupId          : SV_GroupID,\n            uint3 groupThreadId    : SV_GroupThreadID)\n{\n\tuint
+      id = groupThreadId.x + groupId.x * NB_THREADS_PER_GROUP + groupId.y * dispatchWidth
+      * NB_THREADS_PER_GROUP;\n\tuint index = id;\n\tif (id < nbMax)\n\t{\n#if VFX_USE_ALIVE_CURRENT\n\t\tbool
+      alive = (attributeBuffer.Load((index * 0x1 + 0x13D7C0) << 2));\n\t\t\n\n\t\tif
+      (alive)\n\t\t{\n\t\t\tfloat lifetime = asfloat(attributeBuffer.Load((index
+      * 0x1 + 0x0) << 2));\n\t\t\tfloat3 position = asfloat(attributeBuffer.Load3((index
+      * 0x4 + 0x186C0) << 2));\n\t\t\tfloat3 velocity = asfloat(attributeBuffer.Load3((index
+      * 0x4 + 0xDBCC0) << 2));\n\t\t\tfloat mass = (float)1;\n\t\t\tfloat3 targetPosition
+      = asfloat(attributeBuffer.Load3((index * 0x4 + 0x155E80) << 2));\n\t\t\tuint
+      eventCount_a = 0u;\n\t\t\tuint eventCount = (uint)0;\n\t\t\tfloat age = asfloat(attributeBuffer.Load((index
+      * 0x4 + 0xDBCC3) << 2));\n\t\t\t\n\n\t\t\t\n#if VFX_USE_OLDPOSITION_CURRENT\n\t\t\toldPosition
       = position;\n#endif\n\t\t\t\n\t\t\t{\n\t\t\t    VectorFnForce_267A9( /*inout
       */velocity, mass, position, float4x4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1), float4x4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1),
       (float)1, (float)1, deltaTime_a);\n\t\t\t}\n\t\t\tSetAttribute_2CF4000A( /*inout

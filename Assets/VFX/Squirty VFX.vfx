@@ -741,8 +741,8 @@ VisualEffectResource:
       << 2,asuint(age));\n\t\t\n\n#if VFX_HAS_INDIRECT_DRAW\n        uint indirectIndex
       = indirectBuffer.IncrementCounter();\n\t\tindirectBuffer[indirectIndex] = index;\n#endif\n#endif\n\t}\n}\n"
   - compute: 0
-    name: '[System 1]A Lit Mesh Output'
-    source: "Shader \"Hidden/VFX/Squirty VFX/System 1/(A) Lit Mesh Output\"\n{\n\tSubShader\n\t{\t\n\t\tCull
+    name: '[System 1]Lit Mesh Output'
+    source: "Shader \"Hidden/VFX/Squirty VFX/System 1/Lit Mesh Output\"\n{\n\tSubShader\n\t{\t\n\t\tCull
       Off\n\t\t\n\t\tTags { \"Queue\"=\"Transparent+0\" \"IgnoreProjector\"=\"True\"
       \"RenderType\"=\"Transparent\" }\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\tBlend
       One OneMinusSrcAlpha \n\t\tZTest LEqual\n\t\tZWrite Off\n\t\tCull Back\n\t\t\n\t\n\t\t\t\n\t\tHLSLINCLUDE\n\t\t#if
@@ -984,8 +984,8 @@ VisualEffectResource:
       * 0.5f, encodedMotionVector);\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\toutMotionVector
       = encodedMotionVector;\n\t\t\t\t#endif\n\t\t\t}\n\t\t\tENDHLSL\n\t\t}\n\t\t\n\n\t\t\n\t}\n}\n"
   - compute: 0
-    name: '[System 1]B Lit Mesh Output'
-    source: "Shader \"Hidden/VFX/Squirty VFX/System 1/(B) Lit Mesh Output\"\n{\n\tSubShader\n\t{\t\n\t\tCull
+    name: '[System 1]Lit Mesh Output'
+    source: "Shader \"Hidden/VFX/Squirty VFX/System 1/Lit Mesh Output\"\n{\n\tSubShader\n\t{\t\n\t\tCull
       Off\n\t\t\n\t\tTags { \"Queue\"=\"Transparent+0\" \"IgnoreProjector\"=\"True\"
       \"RenderType\"=\"Transparent\" }\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\t\n\t\tBlend
       One OneMinusSrcAlpha \n\t\tZTest LEqual\n\t\tZWrite Off\n\t\tCull Back\n\t\t\n\t\n\t\t\t\n\t\tHLSLINCLUDE\n\t\t#if

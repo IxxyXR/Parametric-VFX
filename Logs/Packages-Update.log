@@ -17,3 +17,12 @@ Update Mode: updateDependencies
 The following packages were updated:
   com.unity.ide.rider from version 1.0.8 to 1.1.0
   com.unity.shadergraph from version 6.5.3 to 7.0.1
+
+=== Sat Sep 21 11:59:58 2019
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.test-framework from version 1.0.18 to 1.1.1
+  com.unity.timeline from version 1.1.0 to 1.2.2
