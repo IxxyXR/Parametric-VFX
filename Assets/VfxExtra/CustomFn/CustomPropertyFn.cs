@@ -33,8 +33,8 @@ namespace UnityEditor.VFX.Block
         public string VMaximum = "2 * PI";
         public float ScaleFactor = 1.0f;
 
-        public VFXContextType ContextType = VFXContextType.kInitAndUpdateAndOutput;
-        public VFXDataType CompatibleData = VFXDataType.kParticle;
+        public VFXContextType ContextType = VFXContextType.InitAndUpdateAndOutput;
+        public VFXDataType CompatibleData = VFXDataType.Particle;
 
         public List<AttributeDeclarationInfo> Attributes = new List<AttributeDeclarationInfo>();
         public List<PropertyDeclarationInfo> Properties = new List<PropertyDeclarationInfo>();
@@ -54,7 +54,7 @@ namespace UnityEditor.VFX.Block
 
         public override VFXContextType compatibleContexts { get { return ContextType; } }
 
-        public override VFXDataType compatibleData { get { return VFXDataType.kParticle; } }
+        public override VFXDataType compatibleData { get { return VFXDataType.Particle; } }
 
         public override IEnumerable<VFXAttributeInfo> attributes
         {
